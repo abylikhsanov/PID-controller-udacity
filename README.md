@@ -3,6 +3,27 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+## Reflection
+
+In order to choose the right coefficients (Kp,Kd,Ki), I have implemented the following procedure:
+* Introduced an integer variable that counts the number of steps (number of calculated CTEs (errors)).
+* Set all the coefficients to 0, at the initialisation step.
+* Everytime, when the number of steps hits 200, the simulator restarts, with this following command to the socket:
+```
+std::string msg = "42[\"reset\",{}]";
+ws.send(msg.data(),msg.length(),uWS::OpCode::TEXT);
+
+```
+* From my intuition, the Ki and Kp coefficients should be relatively small compared to the Kd. This is because overtime, Ki coefficient will be multiplied by the big sum of all errors (CTE) and therefore, even small increase in the Ki can lead to the overshoot, therefore, I did not change the Kp in the first place. Kp also gets multiplied by the error and it can overshoot too but with a smaller effect on the error compared to the Ki. Therefore, I have decided to tweak the Kd first(as this is the coefficient of the rate of change, it has the smallest effect, meaning that small increase in Kd will not lead to a dramatic effect). As all coefficients are set to 0, everytime the simulator hits 200 steps, Kd is being incremented by 1 and simulator then restarts.
+* Only at step 10, I saw a big improvement in the motion, so I set Kd = 10.
+* After that, I have decided to tweak the Kp value, the second smallest coefficient. This time, I was incrementing by 0.01. After several steps, I stopped at value 0.3, as I thought it is a time to tweak the final coefficient which will make the error almost equal to zero.
+* The increment value for the Ki was 0.001. I did not see the drastic imrpovement in my motion but that was expected. Looking at the CTE values, I have stopped at Kp = 0.005.
+
+So in short, that was a manual/Twiddle implementation.
+
+The final video can be found [HERE]()
+
+
 ## Dependencies
 
 * cmake >= 3.5
